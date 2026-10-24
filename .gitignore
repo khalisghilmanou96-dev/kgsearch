@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+search/config.php
+search/data/*.sqlite*
+.DS_Store

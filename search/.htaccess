@@ -1,0 +1,4 @@
+Options -Indexes
+<FilesMatch "^(config\.php|config\.example\.php|countries\.json\.bak)$">
+Require all denied
+</FilesMatch>
