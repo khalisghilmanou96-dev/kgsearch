@@ -76,6 +76,20 @@ jobs:
             "$SSH_USER@$SSH_HOST:/kgsearch-deploy/incoming/index-${{ github.run_id }}-${{ github.run_attempt }}.sqlite"
 
           echo "KSEARCH SQLite transfer completed."
+      - name: Verify GitHub SSH access to IONOS
+        if: success()
+        env:
+          SSH_HOST: ${{ secrets.IONOS_SSH_HOST }}
+          SSH_USER: ${{ secrets.IONOS_SSH_USER }}
+        run: |
+          ssh -4 \
+            -i ~/.ssh/ksearch_ionos \
+            -o IdentitiesOnly=yes \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            "$SSH_USER@$SSH_HOST" \
+            'echo "KSEARCHBOT GITHUB SSH OK"; python3 --version'
+
       - name: Store generated index for review (not deployed)
         if: always()
         uses: actions/upload-artifact@v4
