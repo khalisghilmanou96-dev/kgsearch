@@ -25,7 +25,9 @@ def main():
         parser.error('max-depth must be 0..20 and delay >= 1')
 
     countries = json.loads((ROOT / 'search/countries.json').read_text(encoding='utf-8'))
-    seeds = json.loads((ROOT / 'crawler/seeds.json').read_text(encoding='utf-8'))
+    runtime_seeds = ROOT / 'crawler/runtime_seeds.json'
+    seeds_path = runtime_seeds if runtime_seeds.exists() else ROOT / 'crawler/seeds.json'
+    seeds = json.loads(seeds_path.read_text(encoding='utf-8'))
     codes = [country['code'] for country in countries]
     if args.batch_number is None:
         # Daily rotation only among countries with configured HTTPS seeds.

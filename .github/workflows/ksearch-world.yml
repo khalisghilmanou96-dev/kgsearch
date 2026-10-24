@@ -30,6 +30,10 @@ jobs:
           cache-dependency-path: crawler/requirements.txt
       - name: Install crawler dependencies
         run: python -m pip install -r crawler/requirements.txt
+      - name: Discover country sources automatically
+        run: |
+          python crawler/auto_discover.py
+
       - name: Crawl selected countries
         env:
           BATCH_NUMBER: ${{ inputs.batch_number }}
