@@ -73,7 +73,7 @@ jobs:
             -o BatchMode=yes \
             -o StrictHostKeyChecking=yes \
             search/data/index.sqlite \
-            "$SSH_USER@$SSH_HOST:/home/www/kgsearch-deploy/incoming/index-${{ github.run_id }}-${{ github.run_attempt }}.sqlite"
+            "$SSH_USER@$SSH_HOST:/kgsearch-deploy/incoming/index-${{ github.run_id }}-${{ github.run_attempt }}.sqlite"
 
           echo "KSEARCH SQLite transfer completed."
       - name: Store generated index for review (not deployed)
