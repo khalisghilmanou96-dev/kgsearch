@@ -521,3 +521,29 @@ footer {
     transition: none;
   }
 }
+
+/* KSEARCH GOLD LOGO PACK V3 */
+.topbar{position:relative;min-height:82px;gap:18px}
+.topbar .studio{display:block;flex:0 0 148px;width:148px;height:60px;background:url('../logo-kgstudio.png') left center/contain no-repeat;overflow:hidden}
+.topbar .studio img,.topbar .studio span{display:none!important}
+.topbar .top-link{font-size:13px;font-weight:600;color:#c7ccd2;white-space:nowrap}
+.topbar .top-link span{display:none!important}
+.topbar .top-link:hover{color:#f3d37a}
+.identity{display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:24px}
+.identity-mark,.identity h1{display:none!important}
+.identity::before{content:'';display:block;width:min(80vw,650px);height:clamp(110px,20vw,255px);background:url('./ksearch-gold-logo.png') center/contain no-repeat;filter:drop-shadow(0 18px 25px rgba(0,0,0,.5)) drop-shadow(0 0 15px rgba(215,167,66,.16));animation:ksearchLogoFloat 7s ease-in-out infinite alternate}
+.identity p{margin:0;color:#e4d5b6;text-align:center;letter-spacing:.06em}
+.search-area{padding-top:clamp(48px,9vh,110px)}
+.search-shell{border-color:rgba(243,211,122,.54)}
+.country-wrap{position:relative;min-width:178px;max-width:210px;height:46px;border-radius:13px;border:1px solid rgba(243,211,122,.48);background:linear-gradient(135deg,rgba(215,167,66,.14),rgba(10,15,21,.94));box-shadow:inset 0 1px rgba(255,255,255,.06);gap:8px}
+.country-wrap #flag{font-size:18px;line-height:1}
+.country-wrap select{width:135px;max-width:100%;font-size:12px;font-weight:700;cursor:pointer}
+.country-wrap .chevron{color:#f3d37a}
+.country-wrap:focus-within{outline:2px solid rgba(243,211,122,.7);outline-offset:3px}
+.source-chip{border-color:rgba(215,167,66,.35);background:rgba(10,16,22,.8)}
+.app.searched .identity{margin-bottom:14px}
+.app.searched .identity::before{width:min(55vw,310px);height:100px;animation:none}
+.app.searched .identity p{display:none}
+@keyframes ksearchLogoFloat{from{transform:translateY(3px);filter:drop-shadow(0 14px 24px rgba(0,0,0,.55)) drop-shadow(0 0 8px rgba(215,167,66,.1))}to{transform:translateY(-6px);filter:drop-shadow(0 22px 27px rgba(0,0,0,.55)) drop-shadow(0 0 24px rgba(215,167,66,.25))}}
+@media(max-width:600px){.topbar{height:68px}.topbar .studio{flex-basis:112px;width:112px;height:47px}.topbar .top-link{font-size:11px}.search-area{padding-top:70px}.identity::before{width:90vw;height:clamp(110px,32vw,180px)}.country-wrap{min-width:0;max-width:116px;height:39px;padding:0 7px;gap:3px}.country-wrap #flag{font-size:15px}.country-wrap select{width:67px;font-size:10px}.app.searched .identity::before{height:76px;width:210px}}
+@media(prefers-reduced-motion:reduce){.identity::before{animation:none}}

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#10151a">
 <meta name="description" content="KSEARCH — explorez le web par pays."><title>KSEARCH — Studio KG</title>
-<link rel="icon" href="../logo-kgstudio.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="./style.css">
+<link rel="icon" href="../logo-kgstudio.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="./style.css?v=kg-gold-20261025">
 </head>
 <body>
 <header class="topbar"><a class="studio" href="../index.html" aria-label="Studio KG"><img src="../logo-kgstudio.png" alt="" onerror="this.hidden=true"><span>STUDIO KG</span></a><a class="top-link" href="../index.html">Site principal <span aria-hidden="true">↗</span></a></header>
