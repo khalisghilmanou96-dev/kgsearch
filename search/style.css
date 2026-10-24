@@ -547,3 +547,166 @@ footer {
 @keyframes ksearchLogoFloat{from{transform:translateY(3px);filter:drop-shadow(0 14px 24px rgba(0,0,0,.55)) drop-shadow(0 0 8px rgba(215,167,66,.1))}to{transform:translateY(-6px);filter:drop-shadow(0 22px 27px rgba(0,0,0,.55)) drop-shadow(0 0 24px rgba(215,167,66,.25))}}
 @media(max-width:600px){.topbar{height:68px}.topbar .studio{flex-basis:112px;width:112px;height:47px}.topbar .top-link{font-size:11px}.search-area{padding-top:70px}.identity::before{width:90vw;height:clamp(110px,32vw,180px)}.country-wrap{min-width:0;max-width:116px;height:39px;padding:0 7px;gap:3px}.country-wrap #flag{font-size:15px}.country-wrap select{width:67px;font-size:10px}.app.searched .identity::before{height:76px;width:210px}}
 @media(prefers-reduced-motion:reduce){.identity::before{animation:none}}
+
+/* KSEARCH — SELECTEUR PAYS DISCRET V3 */
+
+.country-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  max-width: 150px;
+  padding: 0 9px;
+  border: 1px solid rgba(215,167,66,.18);
+  border-radius: 10px;
+  background: rgba(255,255,255,.025);
+  opacity: .88;
+  transition: border-color .2s, background .2s, opacity .2s;
+}
+
+.country-wrap:hover,
+.country-wrap:focus-within {
+  opacity: 1;
+  background: rgba(215,167,66,.045);
+  border-color: rgba(215,167,66,.4);
+}
+
+.country-wrap select {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0 20px 0 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #d9dce0;
+  font: 500 11px Inter, sans-serif;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.country-wrap #flag {
+  flex: none;
+  font-size: 13px;
+  pointer-events: none;
+}
+
+.country-wrap .chevron {
+  position: absolute;
+  z-index: 3;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #d7a742;
+  font-size: 16px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.country-wrap:focus-within .chevron {
+  color: #f3d37a;
+}
+
+@media (max-width: 600px) {
+  .country-wrap {
+    height: 36px;
+    max-width: 110px;
+    padding: 0 7px;
+    gap: 3px;
+  }
+
+  .country-wrap select {
+    font-size: 10px;
+    padding-right: 16px;
+  }
+
+  .country-wrap .chevron {
+    right: 7px;
+    font-size: 14px;
+  }
+}
+
+/* KSEARCH COUNTRY SELECTOR V4 */
+
+.search-actions .country-wrap {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  width: 142px !important;
+  max-width: 142px !important;
+  height: 36px !important;
+  padding: 0 9px !important;
+  gap: 5px !important;
+  border: 1px solid rgba(215,167,66,.19) !important;
+  border-radius: 9px !important;
+  background: rgba(255,255,255,.025) !important;
+  opacity: .85;
+  transition: opacity .2s, border-color .2s, background .2s;
+}
+
+.search-actions .country-wrap:hover,
+.search-actions .country-wrap:focus-within {
+  opacity: 1;
+  border-color: rgba(215,167,66,.5) !important;
+  background: rgba(215,167,66,.06) !important;
+}
+
+.search-actions .country-wrap #flag {
+  font-size: 13px !important;
+  flex: none;
+  pointer-events: none;
+}
+
+.search-actions .country-wrap select {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 5 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  padding: 0 24px 0 30px !important;
+  margin: 0 !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  border: 0 !important;
+  border-radius: 9px !important;
+  background: transparent !important;
+  color: #d9dce0 !important;
+  font: 500 11px Inter, sans-serif !important;
+  cursor: pointer !important;
+}
+
+.search-actions .country-wrap .chevron {
+  position: absolute !important;
+  right: 10px !important;
+  top: 50% !important;
+  z-index: 6 !important;
+  transform: translateY(-50%) !important;
+  color: #d7a742 !important;
+  font-size: 15px !important;
+  line-height: 1 !important;
+  pointer-events: none !important;
+}
+
+@media (max-width: 600px) {
+  .search-actions .country-wrap {
+    width: 105px !important;
+    max-width: 105px !important;
+    height: 34px !important;
+  }
+
+  .search-actions .country-wrap select {
+    padding-left: 25px !important;
+    padding-right: 19px !important;
+    font-size: 10px !important;
+  }
+
+  .search-actions .country-wrap .chevron {
+    right: 7px !important;
+  }
+}
