@@ -745,3 +745,65 @@ footer {
     max-width: 115px !important;
   }
 }
+
+/* KSEARCH CLICKABLE CSS LOGO V6 */
+
+/* Supprimer uniquement l'ancien logo décoratif */
+.identity::before,
+.app.searched .identity::before {
+  content: none !important;
+  display: none !important;
+}
+
+/* Vrai logo cliquable */
+.identity .ksearch-home-link {
+  display: block;
+  flex: 0 0 auto;
+  width: min(80vw, 650px);
+  height: clamp(110px, 20vw, 255px);
+  margin-inline: auto;
+  background: url("./ksearch-gold-logo.png")
+              center / contain no-repeat;
+  cursor: pointer;
+  text-decoration: none;
+  border-radius: 12px;
+  filter: drop-shadow(0 18px 25px rgba(0,0,0,.5))
+          drop-shadow(0 0 15px rgba(215,167,66,.16));
+  animation: ksearchLogoFloat 7s ease-in-out infinite alternate;
+  transition: filter .25s ease;
+}
+
+.identity .ksearch-home-link:hover {
+  filter: drop-shadow(0 18px 25px rgba(0,0,0,.5))
+          drop-shadow(0 0 26px rgba(215,167,66,.5));
+}
+
+.identity .ksearch-home-link:focus-visible {
+  outline: 2px solid #f3d37a;
+  outline-offset: 5px;
+}
+
+/* Logo réduit lorsque les résultats sont affichés */
+.app.searched .identity .ksearch-home-link {
+  width: min(55vw, 310px);
+  height: 100px;
+  animation: none;
+}
+
+@media (max-width: 600px) {
+  .identity .ksearch-home-link {
+    width: 90vw;
+    height: clamp(110px, 32vw, 180px);
+  }
+
+  .app.searched .identity .ksearch-home-link {
+    width: 210px;
+    height: 76px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .identity .ksearch-home-link {
+    animation: none;
+  }
+}
