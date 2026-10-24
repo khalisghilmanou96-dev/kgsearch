@@ -58,6 +58,9 @@ jobs:
           fi
           python -c 'import sys; sys.path.insert(0,"crawler"); from frontier import connect,add_url; c=connect(); add_url(c,"https://visitwallonia.be/","BE"); add_url(c,"https://www.france.fr/fr/","FR"); c.close()'
 
+      - name: Seed general worldwide sources
+        run: python crawler/seed_general_sources.py
+
       - name: Crawl persistent worldwide frontier
         env:
           KSEARCH_FRONTIER_DB: crawler/data/frontier.sqlite
