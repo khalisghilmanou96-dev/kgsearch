@@ -39,6 +39,43 @@ jobs:
           else
             python crawler/world_runner.py --batch-size 8 --max-pages 20 --max-depth 1 --delay 2
           fi
+      - name: Configure SSH for IONOS
+        if: success()
+        env:
+          SSH_KEY: ${{ secrets.IONOS_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.IONOS_KNOWN_HOSTS }}
+        run: |
+          if [ ! -s search/data/index.sqlite ]; then
+            echo "No SQLite index generated; skipping transfer."
+            exit 0
+          fi
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/ksearch_ionos
+          chmod 600 ~/.ssh/ksearch_ionos
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Transfer SQLite index to IONOS
+        if: success()
+        env:
+          SSH_HOST: ${{ secrets.IONOS_SSH_HOST }}
+          SSH_USER: ${{ secrets.IONOS_SSH_USER }}
+        run: |
+          if [ ! -s search/data/index.sqlite ]; then
+            echo "Nothing to transfer."
+            exit 0
+          fi
+
+          scp -4 \
+            -i ~/.ssh/ksearch_ionos \
+            -o IdentitiesOnly=yes \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            search/data/index.sqlite \
+            "$SSH_USER@$SSH_HOST:/home/www/kgsearch-deploy/incoming/index-${{ github.run_id }}-${{ github.run_attempt }}.sqlite"
+
+          echo "KSEARCH SQLite transfer completed."
       - name: Store generated index for review (not deployed)
         if: always()
         uses: actions/upload-artifact@v4
