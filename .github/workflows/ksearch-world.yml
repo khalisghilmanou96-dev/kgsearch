@@ -30,19 +30,6 @@ jobs:
           cache-dependency-path: crawler/requirements.txt
       - name: Install crawler dependencies
         run: python -m pip install -r crawler/requirements.txt
-      - name: Discover country sources automatically
-        run: |
-          python crawler/auto_discover.py
-
-      - name: Crawl selected countries
-        env:
-          BATCH_NUMBER: ${{ inputs.batch_number }}
-        run: |
-          if [[ -n "$BATCH_NUMBER" ]]; then
-            python crawler/world_runner.py --batch-size 8 --max-pages 20 --max-depth 1 --delay 2 --batch-number "$BATCH_NUMBER"
-          else
-            python crawler/world_runner.py --batch-size 8 --max-pages 20 --max-depth 1 --delay 2
-          fi
       - name: Configure SSH for IONOS
         if: success()
         env:
@@ -55,6 +42,52 @@ jobs:
           chmod 600 ~/.ssh/ksearch_ionos
           printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
+
+      - name: Restore persistent frontier
+        env:
+          SSH_HOST: ${{ secrets.IONOS_SSH_HOST }}
+          SSH_USER: ${{ secrets.IONOS_SSH_USER }}
+        run: |
+          mkdir -p crawler/data
+          ssh -4 -i ~/.ssh/ksearch_ionos -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" 'test -d /home/www/kgsearch-deploy || exit 1'
+          if ssh -4 -i ~/.ssh/ksearch_ionos -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" 'test -f /home/www/kgsearch-deploy/data/frontier.sqlite'; then
+            scp -4 -i ~/.ssh/ksearch_ionos -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST:/home/www/kgsearch-deploy/data/frontier.sqlite" crawler/data/frontier.sqlite
+            python -c 'import sqlite3; c=sqlite3.connect("crawler/data/frontier.sqlite"); assert c.execute("PRAGMA integrity_check").fetchone()[0]=="ok"; c.close()'
+          else
+            echo "First execution: initializing frontier."
+          fi
+          python -c 'import sys; sys.path.insert(0,"crawler"); from frontier import connect,add_url; c=connect(); add_url(c,"https://visitwallonia.be/","BE"); add_url(c,"https://www.france.fr/fr/","FR"); c.close()'
+
+      - name: Crawl persistent worldwide frontier
+        env:
+          KSEARCH_FRONTIER_DB: crawler/data/frontier.sqlite
+          KSEARCH_INDEX_DB: search/data/index.sqlite
+        run: |
+          python crawler/frontier_runner.py --limit 20 --delay 2
+          python crawler/sqlite_snapshot.py crawler/data/frontier.sqlite crawler/data/frontier-export.sqlite
+
+      - name: Save persistent frontier to IONOS
+        env:
+          SSH_HOST: ${{ secrets.IONOS_SSH_HOST }}
+          SSH_USER: ${{ secrets.IONOS_SSH_USER }}
+        run: |
+          python - <<'PYCHECK'
+          import sqlite3
+          from pathlib import Path
+          db = Path("crawler/data/frontier-export.sqlite")
+          if not db.is_file():
+              raise SystemExit("Frontière exportée absente")
+          with sqlite3.connect(db) as con:
+              assert con.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
+              columns = {row[1] for row in con.execute("PRAGMA table_info(frontier)")}
+              assert {"url", "status", "next_crawl_at"} <= columns
+              assert con.execute("SELECT COUNT(*) FROM frontier").fetchone()[0] > 0
+          print("Frontière exportée : valide")
+          PYCHECK
+          ssh -4 -i ~/.ssh/ksearch_ionos -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" 'mkdir -p /home/www/kgsearch-deploy/data'
+          scp -4 -i ~/.ssh/ksearch_ionos -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes crawler/data/frontier-export.sqlite "$SSH_USER@$SSH_HOST:/home/www/kgsearch-deploy/data/frontier-upload-${{ github.run_id }}-${{ github.run_attempt }}.sqlite"
+          ssh -4 -i ~/.ssh/ksearch_ionos -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" 'python3 -c '"'"'import os,sqlite3; from pathlib import Path; p=Path("/home/www/kgsearch-deploy/data"); src=p/"frontier-upload-${{ github.run_id }}-${{ github.run_attempt }}.sqlite"; dst=p/"frontier.sqlite"; old=p/"frontier-previous.sqlite"; c=sqlite3.connect(src); assert c.execute("PRAGMA integrity_check").fetchone()[0]=="ok"; assert c.execute("SELECT COUNT(*) FROM frontier").fetchone()[0]>0; c.close(); os.replace(dst,old) if dst.exists() else None; os.replace(src,dst)'"'"''
+          echo "Persistent frontier saved safely."
 
       - name: Transfer SQLite index to IONOS
         if: success()

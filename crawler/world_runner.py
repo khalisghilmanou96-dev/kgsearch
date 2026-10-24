@@ -74,8 +74,36 @@ def main():
         except subprocess.TimeoutExpired:
             failures += 1
             print(f'Crawler timed out for {code}', file=sys.stderr, flush=True)
-    print(f'Finished: attempted={attempted}, failures={failures}', flush=True)
-    return 1 if failures else 0
+    successful = attempted - failures
+
+    report = {
+        'attempted': attempted,
+        'successful': successful,
+        'failures': failures,
+        'partial_success': successful > 0 and failures > 0,
+    }
+
+    report_path = ROOT / 'crawler' / 'last_crawl_report.json'
+    report_path.write_text(
+        json.dumps(report, indent=2) + '\n',
+        encoding='utf-8'
+    )
+
+    print(
+        f'Finished: attempted={attempted}, '
+        f'successful={successful}, failures={failures}',
+        flush=True
+    )
+
+    if failures:
+        print(
+            'WARNING: Some countries failed; '
+            'successful results remain available.',
+            file=sys.stderr,
+            flush=True
+        )
+
+    return 0 if successful > 0 else 1
 
 
 if __name__ == '__main__':

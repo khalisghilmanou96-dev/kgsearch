@@ -14,7 +14,10 @@ from urllib.parse import urljoin, urlsplit, urlunsplit
 from urllib.robotparser import RobotFileParser
 
 import requests
+from safe_http import create_session
 from bs4 import BeautifulSoup
+
+from frontier_discovery import save_discovered_links
 
 ROOT = Path(__file__).resolve().parent.parent / 'search'
 DB = ROOT / 'data' / 'index.sqlite'
@@ -79,7 +82,7 @@ def main():
     if not queue:
         ap.error('Aucune URL de départ avec extension .' + tld)
     con = init_db()
-    session = requests.Session()
+    session = create_session()
     session.headers.update({'User-Agent': AGENT, 'Accept': 'text/html,application/xhtml+xml'})
     session.trust_env = False
     robots = {}
@@ -142,6 +145,27 @@ def main():
                 (url, host, tld, title[:250], desc[:500], content, int(time.time())))
             con.commit()
             indexed += 1
+
+            try:
+                discovery = save_discovered_links(
+                    url,
+                    raw.decode(
+                        response.encoding or 'utf-8',
+                        errors='replace'
+                    )
+                )
+                LOG.info(
+                    'Liens découverts : %d, nouveaux : %d',
+                    discovery['discovered'],
+                    discovery['added']
+                )
+            except Exception as exc:
+                LOG.warning(
+                    'Découverte non bloquante pour %s : %s',
+                    url,
+                    exc
+                )
+
             LOG.info('[%d/%d] %s', indexed, args.max_pages, url)
             for href in links:
                 target = normalize(urljoin(url, href), tld)
