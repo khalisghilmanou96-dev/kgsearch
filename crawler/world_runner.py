@@ -27,6 +27,19 @@ def main():
     countries = json.loads((ROOT / 'search/countries.json').read_text(encoding='utf-8'))
     seeds = json.loads((ROOT / 'crawler/seeds.json').read_text(encoding='utf-8'))
     codes = [country['code'] for country in countries]
+    if args.batch_number is None:
+        # Daily rotation only among countries with configured HTTPS seeds.
+        codes = [
+            code for code in codes
+            if isinstance(seeds.get(code), list)
+            and any(
+                isinstance(url, str) and url.startswith('https://')
+                for url in seeds[code]
+            )
+        ]
+    if not codes:
+        print('No configured HTTPS seeds: nothing to crawl', flush=True)
+        return 0
     batch_count = (len(codes) + args.batch_size - 1) // args.batch_size
     batch_number = (dt.date.today().toordinal() if args.batch_number is None
                     else args.batch_number) % batch_count

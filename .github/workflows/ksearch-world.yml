@@ -72,6 +72,29 @@ jobs:
             "$SSH_USER@$SSH_HOST:/kgsearch-deploy/incoming/index-${{ github.run_id }}-${{ github.run_attempt }}.sqlite"
 
           echo "KSEARCH SQLite transfer completed."
+      - name: Import validated SQLite into KSEARCHBOT production
+        if: success()
+        env:
+          SSH_HOST: ${{ secrets.IONOS_SSH_HOST }}
+          SSH_USER: ${{ secrets.IONOS_SSH_USER }}
+        run: |
+          if [ ! -s search/data/index.sqlite ]; then
+            echo "No SQLite index: skipping import."
+            exit 0
+          fi
+
+          ssh -4 \
+            -i ~/.ssh/ksearch_ionos \
+            -o IdentitiesOnly=yes \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            "$SSH_USER@$SSH_HOST" \
+            'python3 /home/www/kgsearch-deploy/crawler/import_production.py \
+              --base /home/www/sitevitrine/search/data/index.sqlite \
+              --incoming /home/www/kgsearch-deploy/incoming/index-${{ github.run_id }}-${{ github.run_attempt }}.sqlite \
+              --backup-dir /home/www/kgsearch-deploy/backups \
+              --lock-file /home/www/kgsearch-deploy/import.lock'
+
       - name: Verify GitHub SSH access to IONOS
         if: success()
         env:
