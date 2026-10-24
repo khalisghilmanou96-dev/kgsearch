@@ -148,6 +148,20 @@ def run(limit, delay, dry_run=False):
                 ).lower():
                     raise ValueError("Contenu non HTML")
 
+                length = response.headers.get("Content-Length")
+                if length is not None:
+                    try:
+                        if int(length) > 2_000_000:
+                            raise ValueError("Page trop volumineuse")
+                    except ValueError as exc:
+                        if str(exc) == "Page trop volumineuse":
+                            raise
+                        raise ValueError("Content-Length invalide") from exc
+
+                robots_header = response.headers.get(
+                    "X-Robots-Tag", ""
+                ).lower()
+
                 raw = response.raw.read(
                     2_000_001,
                     decode_content=True
@@ -189,7 +203,11 @@ def run(limit, delay, dry_run=False):
 
             result = {"added": added}
 
-            page = extract_page(url, html)
+            page = (
+                None
+                if "noindex" in robots_header or "none" in robots_header
+                else extract_page(url, html)
+            )
             if page is not None:
                 index_path = Path(
                     os.environ.get(
