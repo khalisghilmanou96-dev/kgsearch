@@ -15,7 +15,6 @@
 <input id="query" type="search" maxlength="180" placeholder="Rechercher sur le Web…" autocomplete="off" required>
 <div class="search-actions"><div class="country-wrap"><label class="sr-only" for="country">Pays</label><span id="flag" aria-hidden="true">🌍</span><select id="country" aria-label="Choisir un pays"><option>Chargement…</option></select><span class="chevron" aria-hidden="true">⌄</span></div><button class="submit" type="submit" aria-label="Lancer la recherche"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg></button></div>
 </form>
-<div class="source-line"><span class="source-prefix">Moteur</span><div class="sources"><span class="source-chip">KSEARCHBOT · Hybride</span></div></div>
 </section>
 <section id="results-section" class="results-section" aria-label="Résultats de recherche" aria-live="polite" hidden><div class="results-meta"><span id="result-count">Résultats</span><span id="source-note"></span></div><div id="results" class="results"></div><nav id="pagination" class="pagination" aria-label="Pages de résultats" hidden><button id="previous" type="button">← Précédent</button><span id="page-label">Page 1</span><button id="next" type="button">Suivant →</button></nav></section>
 </main><footer>© Studio KG · KSEARCH <span>Explorez, découvrez, naviguez.</span></footer><script src="./app.js" defer></script>
