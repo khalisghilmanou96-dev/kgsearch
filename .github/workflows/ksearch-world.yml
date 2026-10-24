@@ -45,10 +45,6 @@ jobs:
           SSH_KEY: ${{ secrets.IONOS_SSH_KEY }}
           KNOWN_HOSTS: ${{ secrets.IONOS_KNOWN_HOSTS }}
         run: |
-          if [ ! -s search/data/index.sqlite ]; then
-            echo "No SQLite index generated; skipping transfer."
-            exit 0
-          fi
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           printf '%s\n' "$SSH_KEY" > ~/.ssh/ksearch_ionos
