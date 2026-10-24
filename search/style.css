@@ -710,3 +710,38 @@ footer {
     right: 7px !important;
   }
 }
+
+/* KSEARCH COUNTRY SELECTOR V5 */
+
+.search-actions .country-wrap {
+  cursor: pointer !important;
+  width: 150px !important;
+  max-width: 150px !important;
+  border-radius: 10px !important;
+}
+
+.search-actions .country-wrap .chevron {
+  right: 10px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  font-size: 15px !important;
+  color: #d7a742 !important;
+  pointer-events: none !important;
+}
+
+.search-actions .country-wrap:hover {
+  background: rgba(215,167,66,.09) !important;
+  border-color: rgba(215,167,66,.45) !important;
+}
+
+.search-actions .country-wrap:focus-within {
+  border-color: #d7a742 !important;
+  box-shadow: 0 0 0 2px rgba(215,167,66,.12);
+}
+
+@media (max-width: 600px) {
+  .search-actions .country-wrap {
+    width: 115px !important;
+    max-width: 115px !important;
+  }
+}
