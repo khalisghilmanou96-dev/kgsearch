@@ -51,7 +51,7 @@ jobs:
           mkdir -p crawler/data
           ssh -4 -i ~/.ssh/ksearch_ionos -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" 'test -d /home/www/kgsearch-deploy || exit 1'
           if ssh -4 -i ~/.ssh/ksearch_ionos -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" 'test -f /home/www/kgsearch-deploy/data/frontier.sqlite'; then
-            scp -4 -i ~/.ssh/ksearch_ionos -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST:/home/www/kgsearch-deploy/data/frontier.sqlite" crawler/data/frontier.sqlite
+            scp -4 -i ~/.ssh/ksearch_ionos -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST:/kgsearch-deploy/data/frontier.sqlite" crawler/data/frontier.sqlite
             python -c 'import sqlite3; c=sqlite3.connect("crawler/data/frontier.sqlite"); assert c.execute("PRAGMA integrity_check").fetchone()[0]=="ok"; c.close()'
           else
             echo "First execution: initializing frontier."
@@ -85,7 +85,7 @@ jobs:
           print("Frontière exportée : valide")
           PYCHECK
           ssh -4 -i ~/.ssh/ksearch_ionos -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" 'mkdir -p /home/www/kgsearch-deploy/data'
-          scp -4 -i ~/.ssh/ksearch_ionos -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes crawler/data/frontier-export.sqlite "$SSH_USER@$SSH_HOST:/home/www/kgsearch-deploy/data/frontier-upload-${{ github.run_id }}-${{ github.run_attempt }}.sqlite"
+          scp -4 -i ~/.ssh/ksearch_ionos -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes crawler/data/frontier-export.sqlite "$SSH_USER@$SSH_HOST:/kgsearch-deploy/data/frontier-upload-${{ github.run_id }}-${{ github.run_attempt }}.sqlite"
           ssh -4 -i ~/.ssh/ksearch_ionos -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" 'python3 -c '"'"'import os,sqlite3; from pathlib import Path; p=Path("/home/www/kgsearch-deploy/data"); src=p/"frontier-upload-${{ github.run_id }}-${{ github.run_attempt }}.sqlite"; dst=p/"frontier.sqlite"; old=p/"frontier-previous.sqlite"; c=sqlite3.connect(src); assert c.execute("PRAGMA integrity_check").fetchone()[0]=="ok"; assert c.execute("SELECT COUNT(*) FROM frontier").fetchone()[0]>0; c.close(); os.replace(dst,old) if dst.exists() else None; os.replace(src,dst)'"'"''
           echo "Persistent frontier saved safely."
 
