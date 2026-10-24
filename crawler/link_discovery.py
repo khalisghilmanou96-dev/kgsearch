@@ -46,6 +46,28 @@ def infer_country(url):
     return None
 
 
+
+TRACKING_PARAMETERS = {
+    "cookie_lang", "utm_source", "utm_medium", "utm_campaign",
+    "utm_term", "utm_content", "fbclid", "gclid", "mc_cid", "mc_eid"
+}
+
+
+def clean_discovered_url(url):
+    from urllib.parse import parse_qsl, urlencode, urlunsplit
+
+    parsed = urlsplit(url)
+    query = urlencode([
+        (key, value)
+        for key, value in parse_qsl(parsed.query, keep_blank_values=True)
+        if key.lower() not in TRACKING_PARAMETERS
+    ], doseq=True)
+
+    return normalize_url(urlunsplit((
+        parsed.scheme, parsed.netloc, parsed.path, query, ""
+    )))
+
+
 def discover_links(base_url, html, limit=500):
     """Extrait les URL HTTP(S) sans visiter les sites."""
     soup = BeautifulSoup(html, "html.parser")
@@ -53,7 +75,7 @@ def discover_links(base_url, html, limit=500):
     seen = set()
 
     for tag in soup.find_all("a", href=True):
-        target = normalize_url(urljoin(base_url, tag["href"]))
+        target = clean_discovered_url(urljoin(base_url, tag["href"]))
 
         if not target:
             continue

@@ -66,6 +66,26 @@ def robots_allowed(session, url):
         return False
 
 
+
+def prioritize_domains(rows):
+    """Répartit les URL entre les domaines pour diversifier le crawl."""
+    from collections import defaultdict, deque
+
+    groups = defaultdict(deque)
+    for row in rows:
+        host = urlsplit(row[0]).hostname or ""
+        groups[host].append(row)
+
+    ordered = []
+    while groups:
+        for host in list(groups):
+            ordered.append(groups[host].popleft())
+            if not groups[host]:
+                del groups[host]
+
+    return ordered
+
+
 def run(limit, delay, dry_run=False):
     frontier_path = os.environ.get("KSEARCH_FRONTIER_DB")
     con = connect(Path(frontier_path)) if frontier_path else connect()
@@ -82,7 +102,9 @@ def run(limit, delay, dry_run=False):
           AND next_crawl_at <= ?
         ORDER BY discovered_at
         LIMIT ?
-    """, (now, limit)).fetchall()
+    """, (now, max(limit * 10, 100))).fetchall()
+
+    rows = prioritize_domains(rows)[:limit]
 
     if dry_run:
         print("=== KSEARCHBOT : SIMULATION ===")
